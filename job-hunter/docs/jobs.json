@@ -1,0 +1,76 @@
+{
+ "generated_at": "2026-09-16T13:06:06+00:00",
+ "count": 2,
+ "new_today": 2,
+ "jobs": [
+  {
+   "id": "demo-1",
+   "title": "Founding Compliance Manager (MLRO track)",
+   "company": "Nimbus Pay",
+   "location": "Munich, Germany",
+   "remote": false,
+   "url": "https://example.com/job/1",
+   "source": "Demo",
+   "posted_at": "2026-09-16",
+   "salary_raw": "€75,000 - €95,000 + equity",
+   "tags": [
+    "fintech",
+    "seed"
+   ],
+   "description": "Series A B2B SaaS payments startup. Founding team member, own AML, KYC, CDD and sanctions end to end. Stock options.",
+   "country": "Germany",
+   "city": "Munich",
+   "is_remote": false,
+   "salary_min": 75000,
+   "salary_max": 95000,
+   "salary_source": "from posting",
+   "purchasing_power": 800.0,
+   "weak_balance": false,
+   "company_size": "Startup (1-50)",
+   "score": 100,
+   "reasons": [
+    "core match in title: compliance, mlro",
+    "role can evolve: founding",
+    "startup / SaaS signals: seed, series a, startup, b2b saas",
+    "Munich — top priority location",
+    "salary disclosed"
+   ],
+   "first_seen": "2026-09-16",
+   "is_new": true
+  },
+  {
+   "id": "demo-2",
+   "title": "Chief of Staff — Risk & Operations",
+   "company": "Lumen Ledger",
+   "location": "Remote, Europe",
+   "remote": true,
+   "url": "https://example.com/job/2",
+   "source": "Demo",
+   "posted_at": "2026-09-16",
+   "salary_raw": "",
+   "tags": [
+    "b2b saas",
+    "series b"
+   ],
+   "description": "Scale-up regtech. Special projects across compliance, business operations and go-to-market. High growth.",
+   "country": "Europe (any)",
+   "city": "Remote",
+   "is_remote": true,
+   "salary_min": 59500,
+   "salary_max": 87500,
+   "salary_source": "estimate (Remote benchmark)",
+   "purchasing_power": null,
+   "weak_balance": false,
+   "company_size": "Scale-up (50-500)",
+   "score": 91,
+   "reasons": [
+    "core match in title: risk",
+    "role can evolve: chief of staff",
+    "startup / SaaS signals: series b, scale-up, b2b saas, saas",
+    "remote"
+   ],
+   "first_seen": "2026-09-16",
+   "is_new": true
+  }
+ ]
+}
