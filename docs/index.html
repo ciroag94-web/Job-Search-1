@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Hunter — AML &amp; adjacent roles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFAF7; --ink:#15181C; --ink-soft:#5A6068; --rule:#E2DFD8;
+  --panel:#FFFFFF; --deep:#1F3A5F; --signal:#2F7D62; --warn:#9A5B23;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+     font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px}
+
+header{padding:44px 0 22px;border-bottom:2px solid var(--ink)}
+h1{font-size:clamp(28px,4.4vw,44px);line-height:1.05;margin:0;letter-spacing:-.02em;font-weight:600}
+.sub{color:var(--ink-soft);margin:10px 0 0;max-width:62ch}
+.meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);margin:16px 0 0;
+      display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.meta b{color:var(--deep);font-weight:500}
+
+/* live run indicator */
+.run{margin:14px 0 0;padding:12px 14px;border:1px solid var(--rule);border-radius:5px;
+     background:var(--panel);font-family:var(--mono);font-size:12px}
+.run[hidden]{display:none}
+.run h2{font:inherit;font-weight:500;color:var(--ink);margin:0 0 8px}
+.feeds{display:flex;flex-wrap:wrap;gap:6px}
+.feed{padding:2px 8px;border:1px solid var(--rule);border-radius:3px;color:var(--ink-soft)}
+.feed.ok{color:var(--signal);border-color:#BFD9CE}
+.feed.fail{color:var(--warn);border-color:#E3CBAE}
+.feed.busy{color:var(--deep);border-color:#C3D2E4}
+.progress{height:2px;background:var(--rule);margin-top:10px;overflow:hidden}
+.progress i{display:block;height:100%;width:35%;background:var(--deep);
+            animation:slide 1.1s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(330%)}}
+@media (prefers-reduced-motion:reduce){.progress i{animation:none;width:100%}}
+
+.filters{display:grid;gap:14px 18px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+         padding:20px 0;border-bottom:1px solid var(--rule)}
+label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:5px}
+select,input[type=search],input[type=range]{width:100%;font:inherit;font-size:14px;
+  padding:7px 9px;border:1px solid var(--rule);border-radius:4px;background:var(--panel);color:var(--ink)}
+input[type=range]{padding:0;border:none;background:none;accent-color:var(--deep)}
+.rangeval{font-family:var(--mono);font-size:12.5px;color:var(--deep)}
+.toggles{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:12px 0 0;
+         font-size:13.5px;color:var(--ink-soft)}
+.toggles label{display:flex;gap:6px;align-items:center;margin:0;font-size:13.5px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;
+     padding:16px 0 8px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.bar div{display:flex;gap:8px}
+button{font:inherit;font-size:12.5px;background:var(--panel);border:1px solid var(--rule);
+  border-radius:4px;padding:5px 11px;cursor:pointer;color:var(--ink-soft)}
+button:hover{border-color:var(--ink);color:var(--ink)}
+button.primary{background:var(--deep);border-color:var(--deep);color:#fff}
+button.primary:hover{opacity:.88;color:#fff}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
+
+.job{display:grid;grid-template-columns:54px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.score{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--deep);text-align:right}
+.score small{display:block;font-size:10px;color:var(--ink-soft);font-weight:400}
+.title{font-size:17.5px;font-weight:600;margin:0 0 3px;letter-spacing:-.01em}
+.title a{color:inherit;text-decoration:none}
+.title a:hover{text-decoration:underline}
+.co{color:var(--ink-soft);font-size:14px;margin:0 0 9px}
+.facts{display:flex;flex-wrap:wrap;gap:6px 8px;font-family:var(--mono);font-size:11.5px}
+.f{border:1px solid var(--rule);border-radius:3px;padding:2px 7px;color:var(--ink-soft);background:var(--panel)}
+.f.pay{color:var(--signal);border-color:#BFD9CE}
+.f.weak{color:var(--warn);border-color:#E3CBAE}
+.f.new{color:#fff;background:var(--deep);border-color:var(--deep)}
+.why{margin:9px 0 0;font-size:13.5px;color:var(--ink-soft)}
+.empty{padding:60px 0;text-align:center;color:var(--ink-soft)}
+footer{margin-top:40px;font-size:13px;color:var(--ink-soft)}
+@media (max-width:560px){.job{grid-template-columns:44px 1fr;gap:12px}}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#111316;--ink:#ECEAE4;--ink-soft:#9AA0A8;--rule:#2A2E34;
+        --panel:#191C20;--deep:#8FB4E0;--signal:#7FC3A7;--warn:#D6A264}
+  button.primary{color:#111316}
+  button.primary:hover{color:#111316}
+  .f.new{color:#111316}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Job Hunter</h1>
+  <p class="sub">Compliance, financial-crime and adjacent roles at early-stage startups,
+     B2B SaaS and scale-ups — ranked for Munich, remote work, and room to grow.
+     The search runs the moment you open this page, and again every 24 hours on its own.</p>
+  <p class="meta" id="meta">Starting the search…</p>
+
+  <section class="run" id="run" aria-live="polite">
+    <h2 id="runTitle">Querying job boards</h2>
+    <div class="feeds" id="feeds"></div>
+    <div class="progress" id="progress"><i></i></div>
+  </section>
+</header>
+
+<section class="filters">
+  <div><label for="q">Search title, company, keyword</label>
+       <input type="search" id="q" placeholder="e.g. founding, MLRO, chief of staff"></div>
+  <div><label for="country">Country</label><select id="country"></select></div>
+  <div><label for="city">City</label><select id="city"></select></div>
+  <div><label for="size">Company size</label><select id="size"></select></div>
+  <div><label for="source">Source</label><select id="source"></select></div>
+  <div><label for="salary">Minimum salary <span class="rangeval" id="salaryval">€0</span></label>
+       <input type="range" id="salary" min="0" max="150000" step="5000" value="0"></div>
+  <div><label for="sort">Sort by</label>
+       <select id="sort">
+         <option value="score">Match score</option>
+         <option value="date">Newest first</option>
+         <option value="pay">Salary (high to low)</option>
+       </select></div>
+</section>
+
+<div class="toggles">
+  <label><input type="checkbox" id="remote"> Remote only</label>
+  <label><input type="checkbox" id="newonly"> Added today</label>
+  <label><input type="checkbox" id="hideweak" checked> Hide weak salary / cost-of-living balance</label>
+  <label><input type="checkbox" id="paidonly"> Salary disclosed in the posting</label>
+</div>
+
+<div class="bar">
+  <span id="count"></span>
+  <div>
+    <button id="reset">Clear filters</button>
+    <button id="rerun" class="primary">Search again</button>
+  </div>
+</div>
+
+<main id="list"></main>
+
+<footer>
+  Every board is queried from your browser when the page loads. The nightly GitHub Action
+  adds the sources browsers can't reach and keeps a dated history in
+  <code>jobs.json</code>. Keywords, cities and salary benchmarks live in
+  <code>config.json</code>.
+</footer>
+</div>
+
+<script>
+/* Job Hunter — browser engine.
+ *
+ * Everything the Python bot does, done again in the page: fetch the job APIs,
+ * parse location and salary, score, de-duplicate. Opening index.html runs it.
+ *
+ * Sources that send CORS headers work directly from the browser. The ones that
+ * don't (RemoteOK, Adzuna) are covered by the nightly GitHub Action, whose
+ * jobs.json is merged in as a baseline. Nothing here needs a key or a server.
+ */
+
+const CFG_URL = "config.json";
+
+/* Built-in copy of config.json, used when the page runs without a web server. */
+const DEFAULT_CONFIG = {
+ "profile": {
+  "headline": "AML / Financial Crime professional moving toward high-growth, evolving roles",
+  "seniority": [
+   "associate",
+   "manager",
+   "lead",
+   "senior",
+   "specialist",
+   "expert",
+   "head"
+  ],
+  "languages": [
+   "Italian",
+   "English",
+   "German (basic)"
+  ]
+ },
+ "keywords": {
+  "core": [
+   "aml",
+   "anti-money laundering",
+   "financial crime",
+   "kyc",
+   "kyb",
+   "cdd",
+   "edd",
+   "compliance",
+   "sanctions",
+   "fraud",
+   "risk",
+   "regulatory",
+   "mlro",
+   "transaction monitoring",
+   "onboarding"
+  ],
+  "adjacent": [
+   "chief of staff",
+   "founding",
+   "biz ops",
+   "business operations",
+   "strategy and operations",
+   "operations manager",
+   "product operations",
+   "product manager",
+   "solutions consultant",
+   "implementation",
+   "customer success manager",
+   "go-to-market",
+   "gtm",
+   "partnerships",
+   "launcher",
+   "generalist",
+   "special projects"
+  ],
+  "company_signals": [
+   "seed",
+   "series a",
+   "series b",
+   "early stage",
+   "early-stage",
+   "startup",
+   "scale-up",
+   "scaleup",
+   "b2b saas",
+   "saas",
+   "fintech",
+   "regtech",
+   "crypto",
+   "web3",
+   "payments",
+   "founding team",
+   "equity",
+   "stock options",
+   "esop"
+  ],
+  "exclude": [
+   "internship",
+   "intern (",
+   "working student",
+   "werkstudent",
+   "praktikum",
+   "apprentice",
+   "unpaid",
+   "volunteer",
+   "night shift"
+  ]
+ },
+ "locations": {
+  "priority": [
+   "Munich",
+   "München",
+   "Remote"
+  ],
+  "good_eu": [
+   "Berlin",
+   "Hamburg",
+   "Frankfurt",
+   "Amsterdam",
+   "Dublin",
+   "Zurich",
+   "Zürich",
+   "Copenhagen",
+   "Stockholm",
+   "Luxembourg",
+   "Vienna",
+   "Paris",
+   "Dubai"
+  ],
+  "neutral_eu": [
+   "Barcelona",
+   "Madrid",
+   "Milan",
+   "Milano",
+   "Lisbon",
+   "Warsaw",
+   "Krakow",
+   "Tallinn",
+   "Vilnius",
+   "Prague",
+   "Malta",
+   "Valletta"
+  ],
+  "remote_ok": true
+ },
+ "salary_benchmarks": {
+  "Munich": {
+   "gross_eur": 80000,
+   "col_index": 100
+  },
+  "Berlin": {
+   "gross_eur": 72000,
+   "col_index": 88
+  },
+  "Frankfurt": {
+   "gross_eur": 78000,
+   "col_index": 93
+  },
+  "Hamburg": {
+   "gross_eur": 72000,
+   "col_index": 90
+  },
+  "Zurich": {
+   "gross_eur": 120000,
+   "col_index": 135
+  },
+  "Amsterdam": {
+   "gross_eur": 75000,
+   "col_index": 97
+  },
+  "Dublin": {
+   "gross_eur": 70000,
+   "col_index": 95
+  },
+  "Copenhagen": {
+   "gross_eur": 78000,
+   "col_index": 100
+  },
+  "Stockholm": {
+   "gross_eur": 62000,
+   "col_index": 92
+  },
+  "Luxembourg": {
+   "gross_eur": 85000,
+   "col_index": 98
+  },
+  "Vienna": {
+   "gross_eur": 65000,
+   "col_index": 85
+  },
+  "Paris": {
+   "gross_eur": 65000,
+   "col_index": 96
+  },
+  "London": {
+   "gross_eur": 85000,
+   "col_index": 110
+  },
+  "Barcelona": {
+   "gross_eur": 45000,
+   "col_index": 75
+  },
+  "Madrid": {
+   "gross_eur": 45000,
+   "col_index": 73
+  },
+  "Milan": {
+   "gross_eur": 45000,
+   "col_index": 80
+  },
+  "Lisbon": {
+   "gross_eur": 38000,
+   "col_index": 72
+  },
+  "Warsaw": {
+   "gross_eur": 40000,
+   "col_index": 60
+  },
+  "Krakow": {
+   "gross_eur": 38000,
+   "col_index": 57
+  },
+  "Prague": {
+   "gross_eur": 40000,
+   "col_index": 63
+  },
+  "Tallinn": {
+   "gross_eur": 42000,
+   "col_index": 62
+  },
+  "Vilnius": {
+   "gross_eur": 40000,
+   "col_index": 58
+  },
+  "Valletta": {
+   "gross_eur": 42000,
+   "col_index": 70
+  },
+  "Bucharest": {
+   "gross_eur": 32000,
+   "col_index": 52
+  },
+  "Sofia": {
+   "gross_eur": 30000,
+   "col_index": 50
+  },
+  "Remote": {
+   "gross_eur": 70000,
+   "col_index": 85
+  }
+ },
+ "min_purchasing_power": 550,
+ "min_gross_eur": 48000,
+ "sources": {
+  "remotive": true,
+  "remoteok": true,
+  "arbeitnow": true,
+  "jobicy": true,
+  "adzuna": false,
+  "adzuna_countries": [
+   "de",
+   "nl",
+   "at",
+   "it"
+  ],
+  "greenhouse_boards": [
+   "monzo",
+   "wise",
+   "ramp"
+  ],
+  "lever_boards": [
+   "sumup"
+  ]
+ },
+ "output": {
+  "max_jobs": 400,
+  "keep_days": 30,
+  "min_score": 25
+ }
+};
+
+const SNAPSHOT_URL = "jobs.json";
+
+/* ------------------------------------------------------------------ utils */
+const stripHtml = t => !t ? "" :
+  new DOMParser().parseFromString(String(t), "text/html").body.textContent
+    .replace(/\s+/g, " ").trim();
+
+const today = () => new Date().toISOString().slice(0, 10);
+
+function isoDate(v) {
+  if (!v) return today();
+  if (typeof v === "number") return new Date(v * (v > 1e11 ? 1 : 1000)).toISOString().slice(0, 10);
+  const s = String(v).slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : today();
+}
+
+async function getJSON(url, params) {
+  const u = new URL(url);
+  Object.entries(params || {}).forEach(([k, v]) => u.searchParams.set(k, v));
+  const r = await fetch(u, { headers: { Accept: "application/json" } });
+  if (!r.ok) throw new Error(`${r.status} ${u.host}`);
+  return r.json();
+}
+
+/* ---------------------------------------------------------------- sources */
+const SOURCES = {
+  async remotive(queries) {
+    const out = [];
+    for (const q of queries) {
+      const d = await getJSON("https://remotive.com/api/remote-jobs", { search: q, limit: 100 });
+      for (const j of d.jobs || []) out.push({
+        id: "remotive-" + j.id, title: j.title || "", company: j.company_name || "",
+        location: j.candidate_required_location || "Remote", remote: true,
+        url: j.url || "", description: stripHtml(j.description).slice(0, 4000),
+        posted_at: isoDate(j.publication_date), source: "Remotive",
+        salary_raw: j.salary || "", tags: j.tags || [],
+      });
+    }
+    return out;
+  },
+
+  async arbeitnow() {
+    const out = [];
+    for (let page = 1; page <= 4; page++) {
+      const d = await getJSON("https://www.arbeitnow.com/api/job-board-api", { page });
+      if (!(d.data || []).length) break;
+      for (const j of d.data) out.push({
+        id: "arbeitnow-" + j.slug, title: j.title || "", company: j.company_name || "",
+        location: j.location || "", remote: !!j.remote, url: j.url || "",
+        description: stripHtml(j.description).slice(0, 4000),
+        posted_at: isoDate(j.created_at), source: "Arbeitnow",
+        salary_raw: "", tags: [...(j.tags || []), ...(j.job_types || [])],
+      });
+    }
+    return out;
+  },
+
+  async jobicy() {
+    const d = await getJSON("https://jobicy.com/api/v2/remote-jobs", { count: 100 });
+    return (d.jobs || []).map(j => ({
+      id: "jobicy-" + j.id, title: j.jobTitle || "", company: j.companyName || "",
+      location: j.jobGeo || "Remote", remote: true, url: j.url || "",
+      description: stripHtml(j.jobExcerpt || j.jobDescription).slice(0, 4000),
+      posted_at: isoDate(j.pubDate), source: "Jobicy",
+      salary_raw: j.annualSalaryMin
+        ? `${j.annualSalaryMin} - ${j.annualSalaryMax} ${j.salaryCurrency || ""}` : "",
+      tags: j.jobIndustry || [],
+    }));
+  },
+
+  async greenhouse(board) {
+    const d = await getJSON(`https://boards-api.greenhouse.io/v1/boards/${board}/jobs`,
+      { content: "true" });
+    return (d.jobs || []).map(j => ({
+      id: `gh-${board}-${j.id}`, title: j.title || "",
+      company: board.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+      location: j.location?.name || "",
+      remote: /remote/i.test(j.location?.name || ""),
+      url: j.absolute_url || "", description: stripHtml(j.content).slice(0, 4000),
+      posted_at: isoDate(j.updated_at), source: `Greenhouse/${board}`,
+      salary_raw: "", tags: [],
+    }));
+  },
+
+  async lever(board) {
+    const d = await getJSON(`https://api.lever.co/v0/postings/${board}`, { mode: "json" });
+    return (d || []).map(j => ({
+      id: `lever-${board}-${j.id}`, title: j.text || "",
+      company: board.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+      location: j.categories?.location || "",
+      remote: /remote/i.test(j.categories?.location || ""),
+      url: j.hostedUrl || "",
+      description: stripHtml(j.descriptionPlain || j.description).slice(0, 4000),
+      posted_at: isoDate(j.createdAt ? j.createdAt / 1000 : null), source: `Lever/${board}`,
+      salary_raw: "", tags: [j.categories?.team, j.categories?.commitment].filter(Boolean),
+    }));
+  },
+};
+
+const QUERIES = ["AML", "compliance", "financial crime", "KYC", "fraud",
+                 "risk", "chief of staff", "business operations", "founding"];
+
+/** Runs every enabled source in parallel. Reports each one's fate to onStatus. */
+async function fetchAll(cfg, onStatus) {
+  const s = cfg.sources || {};
+  const tasks = [];
+  const add = (name, fn) => tasks.push(
+    fn().then(jobs => { onStatus(name, jobs.length, null); return jobs; })
+        .catch(err => { onStatus(name, 0, err); return []; }));
+
+  if (s.remotive) add("Remotive", () => SOURCES.remotive(QUERIES));
+  if (s.arbeitnow) add("Arbeitnow", () => SOURCES.arbeitnow());
+  if (s.jobicy) add("Jobicy", () => SOURCES.jobicy());
+  for (const b of s.greenhouse_boards || []) add(`Greenhouse/${b}`, () => SOURCES.greenhouse(b));
+  for (const b of s.lever_boards || []) add(`Lever/${b}`, () => SOURCES.lever(b));
+
+  return (await Promise.all(tasks)).flat();
+}
+
+/* --------------------------------------------------------------- location */
+const CITY_COUNTRY = {
+  munich: "Germany", "münchen": "Germany", muenchen: "Germany", berlin: "Germany",
+  hamburg: "Germany", frankfurt: "Germany", cologne: "Germany", "köln": "Germany",
+  stuttgart: "Germany", "düsseldorf": "Germany", dusseldorf: "Germany", leipzig: "Germany",
+  amsterdam: "Netherlands", rotterdam: "Netherlands", utrecht: "Netherlands",
+  dublin: "Ireland", cork: "Ireland", zurich: "Switzerland", "zürich": "Switzerland",
+  zug: "Switzerland", geneva: "Switzerland", basel: "Switzerland",
+  vienna: "Austria", wien: "Austria", paris: "France", lyon: "France",
+  copenhagen: "Denmark", stockholm: "Sweden", oslo: "Norway", helsinki: "Finland",
+  luxembourg: "Luxembourg", milan: "Italy", milano: "Italy", rome: "Italy", roma: "Italy",
+  turin: "Italy", torino: "Italy", bologna: "Italy", naples: "Italy",
+  madrid: "Spain", barcelona: "Spain", valencia: "Spain",
+  lisbon: "Portugal", lisboa: "Portugal", porto: "Portugal",
+  warsaw: "Poland", warszawa: "Poland", krakow: "Poland", "kraków": "Poland",
+  prague: "Czechia", praha: "Czechia", brno: "Czechia", budapest: "Hungary",
+  bucharest: "Romania", sofia: "Bulgaria", tallinn: "Estonia", riga: "Latvia",
+  vilnius: "Lithuania", valletta: "Malta", sliema: "Malta", athens: "Greece",
+  london: "United Kingdom", manchester: "United Kingdom", edinburgh: "United Kingdom",
+  belfast: "United Kingdom", dubai: "UAE", "abu dhabi": "UAE",
+  "new york": "USA", "san francisco": "USA", austin: "USA", singapore: "Singapore",
+};
+
+const COUNTRY_WORDS = {
+  germany: "Germany", deutschland: "Germany", netherlands: "Netherlands",
+  ireland: "Ireland", switzerland: "Switzerland", austria: "Austria", france: "France",
+  denmark: "Denmark", sweden: "Sweden", norway: "Norway", finland: "Finland",
+  luxembourg: "Luxembourg", italy: "Italy", italia: "Italy", spain: "Spain",
+  portugal: "Portugal", poland: "Poland", polska: "Poland", czechia: "Czechia",
+  czech: "Czechia", hungary: "Hungary", romania: "Romania", bulgaria: "Bulgaria",
+  estonia: "Estonia", latvia: "Latvia", lithuania: "Lithuania", malta: "Malta",
+  greece: "Greece", cyprus: "Cyprus", belgium: "Belgium",
+  "united kingdom": "United Kingdom", uk: "United Kingdom", emirates: "UAE", uae: "UAE",
+  "united states": "USA", usa: "USA", canada: "Canada", singapore: "Singapore",
+  europe: "Europe (any)", emea: "Europe (any)",
+  worldwide: "Worldwide", anywhere: "Worldwide", global: "Worldwide",
+};
+
+const esc = s => String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+function parseLocation(job) {
+  const raw = (job.location || "").trim(), low = raw.toLowerCase();
+  const isRemote = !!job.remote || /\b(remote|anywhere|work from home|wfh|distributed)\b/i.test(low);
+
+  for (const [c, country] of Object.entries(CITY_COUNTRY)) {
+    if (new RegExp(`\\b${esc(c)}\\b`).test(low)) {
+      const city = (c === "münchen" || c === "muenchen") ? "Munich"
+        : c.replace(/\b\w/g, m => m.toUpperCase());
+      return { country, city, isRemote };
+    }
+  }
+  for (const [w, name] of Object.entries(COUNTRY_WORDS)) {
+    if (new RegExp(`\\b${esc(w)}\\b`).test(low)) return { country: name, city: "", isRemote };
+  }
+  return { country: isRemote ? "Remote / Unspecified" : (raw || "Unspecified"), city: "", isRemote };
+}
+
+/* ----------------------------------------------------------------- salary */
+const CUR = { "$": 0.92, usd: 0.92, "€": 1, eur: 1, "£": 1.17, gbp: 1.17,
+              chf: 1.05, sek: 0.087, dkk: 0.134, nok: 0.086, pln: 0.23 };
+
+const NUM_RE = /([$€£]|usd|eur|gbp|chf|sek|dkk|nok|pln)?\s*(\d{2,3}(?:[.,]\d{3})+|\d{2,3}\s?[kK]|\d{4,7})/gi;
+
+function toEur(numStr, cur) {
+  const s = numStr.trim().toLowerCase().replace(/\s/g, "");
+  let val;
+  if (s.endsWith("k")) val = parseFloat(s.slice(0, -1).replace(",", ".")) * 1000;
+  else val = parseFloat(s.replace(/[.,](?=\d{3}\b)/g, "").replace(",", "."));
+  if (!isFinite(val)) return null;
+  return val * (CUR[(cur || "eur").toLowerCase()] ?? 1);
+}
+
+function parseSalary(text) {
+  if (!text) return [null, null];
+  const vals = [];
+  for (const m of String(text).slice(0, 1500).matchAll(NUM_RE)) {
+    const v = toEur(m[2], m[1]);
+    if (v && v >= 18000 && v <= 400000) vals.push(Math.round(v));
+  }
+  if (!vals.length) return [null, null];
+  const uniq = [...new Set(vals)].sort((a, b) => a - b);
+  return [uniq[0], uniq.length > 1 ? uniq[uniq.length - 1] : uniq[0]];
+}
+
+function estimateSalary(city, bench) {
+  const key = bench[city] ? city
+    : Object.keys(bench).find(k => k.toLowerCase() === (city || "").toLowerCase()) || "Remote";
+  const base = bench[key].gross_eur;
+  return [Math.round(base * 0.85), Math.round(base * 1.25), `estimate (${key} benchmark)`];
+}
+
+function weakBalance(city, cfg) {
+  const b = cfg.salary_benchmarks[city];
+  if (!b) return false;
+  return (b.gross_eur / b.col_index) < (cfg.min_purchasing_power ?? 550)
+      || b.gross_eur < (cfg.min_gross_eur ?? 48000);
+}
+
+/* ---------------------------------------------------------- company size */
+const SIZE_RULES = [
+  [/\b(pre-seed|preseed|seed stage|seed-stage|founding team|founding member|first hire|series a)\b/i, "Startup (1-50)"],
+  [/\b(series b|series c|scale-?up|fast-growing|high-growth)\b/i, "Scale-up (50-500)"],
+  [/\b(\d{1,2},\d{3}\+? employees|global leader|fortune|multinational|worldwide offices)\b/i, "Enterprise (1000+)"],
+];
+const guessSize = text => (SIZE_RULES.find(([rx]) => rx.test(text)) || [, "Unknown"])[1];
+
+/* ---------------------------------------------------------------- scoring */
+function scoreJob(job, cfg) {
+  const kw = cfg.keywords, loc = cfg.locations, bench = cfg.salary_benchmarks;
+  const blob = `${job.title} ${job.company} ${job.description} ${(job.tags || []).join(" ")}`.toLowerCase();
+  const title = (job.title || "").toLowerCase();
+
+  if (kw.exclude.some(bad => title.includes(bad))) return null;
+
+  const hits = list => list.filter(k => blob.includes(k));
+  const titleHits = list => list.filter(k => title.includes(k));
+  const core = hits(kw.core), adj = hits(kw.adjacent), sig = hits(kw.company_signals);
+  if (!core.length && !adj.length) return null;
+
+  let score = 0; const reasons = [];
+  const titleCore = titleHits(kw.core), titleAdj = titleHits(kw.adjacent);
+
+  score += Math.min(core.length, 5) * 4 + titleCore.length * 8;
+  if (titleCore.length) reasons.push("core match in title: " + titleCore.slice(0, 3).join(", "));
+  score += Math.min(adj.length, 4) * 3 + titleAdj.length * 10;
+  if (titleAdj.length) reasons.push("role can evolve: " + titleAdj.slice(0, 3).join(", "));
+  score += Math.min(sig.length, 5) * 5;
+  if (sig.length) reasons.push("startup / SaaS signals: " + sig.slice(0, 4).join(", "));
+
+  const { country, city, isRemote } = parseLocation(job);
+  const displayCity = city || (isRemote ? "Remote" : "—");
+  if (/^(munich|münchen)$/i.test(city)) { score += 30; reasons.push("Munich — top priority location"); }
+  else if (isRemote) { score += 22; reasons.push("remote"); }
+  else if (loc.good_eu.includes(city)) { score += 14; reasons.push(`${city}: good salary/cost balance`); }
+  else if (loc.neutral_eu.includes(city)) score += 5;
+  else if (["USA", "Canada", "Singapore"].includes(country)) {
+    score -= 20; reasons.push("outside EU, on-site");
+  }
+
+  let [smin, smax] = parseSalary(job.salary_raw);
+  if (!smin) [smin, smax] = parseSalary(job.description);
+  let salarySource;
+  if (smin) { salarySource = "from posting"; score += 8; reasons.push("salary disclosed"); }
+  else [smin, smax, salarySource] = estimateSalary(city, bench);
+
+  const weak = weakBalance(city, cfg);
+  if (weak) { score -= 12; reasons.push("weak salary / cost-of-living balance"); }
+  if (smax >= 90000) score += 6;
+  if (/\b(fluent german|verhandlungssicher|muttersprache|native german)\b/i.test(blob)) {
+    score -= 8; reasons.push("fluent German likely required");
+  }
+
+  const size = guessSize(blob);
+  if (size === "Startup (1-50)") score += 10;
+  else if (size === "Scale-up (50-500)") score += 6;
+
+  const b = bench[city];
+  return {
+    ...job, country, city: displayCity, is_remote: isRemote,
+    salary_min: smin, salary_max: smax, salary_source: salarySource,
+    purchasing_power: b ? Math.round(b.gross_eur / b.col_index * 10) / 10 : null,
+    weak_balance: weak, company_size: size,
+    score: Math.max(0, Math.min(100, score)), reasons: reasons.slice(0, 5),
+  };
+}
+
+/* ----------------------------------------------------------------- runner */
+function dedupe(jobs) {
+  const seenId = new Set(), seenTc = new Set(), out = [];
+  for (const j of jobs) {
+    const tc = `${(j.title || "").toLowerCase().trim()}|${(j.company || "").toLowerCase().trim()}`;
+    if (seenId.has(j.id) || seenTc.has(tc)) continue;
+    seenId.add(j.id); seenTc.add(tc); out.push(j);
+  }
+  return out;
+}
+
+/**
+ * The whole run, as the page performs it: load config, load the nightly
+ * snapshot as a baseline, fetch live, score, merge, keep first_seen honest.
+ */
+async function runHunt(onStatus) {
+  // Prefer the file on disk so Python and the page stay in sync; fall back to the
+  // copy baked in below when the page is opened straight from the filesystem.
+  let cfg = DEFAULT_CONFIG;
+  try {
+    cfg = await getJSON(new URL(CFG_URL, location.href).href);
+    onStatus("config.json", 1, null);
+  } catch {
+    onStatus("config.json", 0, new Error("using built-in copy"));
+  }
+
+  let snapshot = { jobs: [] };
+  try {
+    snapshot = await getJSON(new URL(SNAPSHOT_URL, location.href).href + "?" + Date.now());
+    onStatus("Nightly snapshot", (snapshot.jobs || []).length, null);
+  } catch { onStatus("Nightly snapshot", 0, new Error("not built yet")); }
+
+  const raw = await fetchAll(cfg, onStatus);
+  const minScore = cfg.output?.min_score ?? 0;
+  const live = dedupe(raw).map(j => scoreJob(j, cfg)).filter(j => j && j.score >= minScore);
+
+  // snapshot wins on first_seen (it knows when a posting actually appeared)
+  const byId = new Map();
+  for (const j of snapshot.jobs || []) byId.set(j.id, j);
+  for (const j of live) {
+    const old = byId.get(j.id);
+    j.first_seen = old?.first_seen || today();
+    j.is_new = j.first_seen === today();
+    byId.set(j.id, j);
+  }
+
+  const keep = cfg.output?.keep_days ?? 30;
+  const cutoff = new Date(Date.now() - keep * 864e5).toISOString().slice(0, 10);
+  const jobs = dedupe([...byId.values()])
+    .filter(j => (j.first_seen || today()) >= cutoff)
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, cfg.output?.max_jobs ?? 400);
+
+  return {
+    cfg, jobs,
+    generated_at: new Date().toISOString(),
+    live_count: live.length,
+    snapshot_at: snapshot.generated_at || null,
+  };
+}
+
+</script>
+
+<script>
+const el = id => document.getElementById(id);
+const eur = n => n ? "€" + Math.round(n / 1000) + "k" : "—";
+const escHtml = s => String(s || "").replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+const controls = ["q","country","city","size","source","salary","sort",
+                  "remote","newonly","hideweak","paidonly"];
+
+let JOBS = [], RESULT = {}, ready = false;
+
+/* ---- the run, kicked off on load ------------------------------------- */
+const feedEls = new Map();
+function status(name, count, err) {
+  let node = feedEls.get(name);
+  if (!node) {
+    node = document.createElement("span");
+    node.className = "feed";
+    feedEls.set(name, node);
+    el("feeds").appendChild(node);
+  }
+  node.className = "feed " + (err ? "fail" : "ok");
+  node.textContent = err ? `${name}: unreachable` : `${name}: ${count}`;
+}
+
+async function hunt() {
+  el("run").hidden = false;
+  el("progress").hidden = false;
+  el("runTitle").textContent = "Querying job boards";
+  el("rerun").disabled = true;
+  el("rerun").textContent = "Searching…";
+  feedEls.clear();
+  el("feeds").innerHTML = "";
+
+  try {
+    RESULT = await runHunt(status);
+    JOBS = RESULT.jobs;
+    ready = true;
+    buildFilters();
+    render();
+    const when = new Date(RESULT.generated_at);
+    el("meta").innerHTML =
+      `<span><b>${JOBS.length}</b> open roles</span>` +
+      `<span><b>${JOBS.filter(j => j.is_new).length}</b> new today</span>` +
+      `<span>searched ${when.toLocaleTimeString()}</span>` +
+      (RESULT.snapshot_at
+        ? `<span>nightly snapshot ${new Date(RESULT.snapshot_at).toLocaleDateString()}</span>` : "");
+    el("runTitle").textContent = `Search finished — ${RESULT.live_count} live results merged with the snapshot`;
+  } catch (err) {
+    el("runTitle").textContent = "The search couldn't finish";
+    el("meta").textContent = "No job board could be reached. Check your connection, " +
+      "then press Search again.";
+    el("list").innerHTML = '<p class="empty">No results — press Search again to retry.</p>';
+    console.error(err);
+  } finally {
+    el("progress").hidden = true;
+    el("rerun").disabled = false;
+    el("rerun").textContent = "Search again";
+  }
+}
+
+/* ---- filters ---------------------------------------------------------- */
+function fill(select, values, allLabel) {
+  select.innerHTML = `<option value="">${allLabel}</option>` +
+    values.map(v => `<option value="${escHtml(v)}">${escHtml(v)}</option>`).join("");
+}
+
+function buildFilters() {
+  const uniq = k => [...new Set(JOBS.map(j => j[k]).filter(v => v && v !== "—"))].sort();
+  fill(el("country"), uniq("country"), "All countries");
+  fill(el("city"), uniq("city"), "All cities");
+  fill(el("size"), uniq("company_size"), "Any size");
+  fill(el("source"), uniq("source"), "All sources");
+}
+
+function syncCities() {
+  const c = el("country").value;
+  const cities = [...new Set(JOBS.filter(j => !c || j.country === c)
+    .map(j => j.city).filter(v => v && v !== "—"))].sort();
+  const prev = el("city").value;
+  fill(el("city"), cities, "All cities");
+  if (cities.includes(prev)) el("city").value = prev;
+}
+
+function render() {
+  if (!ready) return;
+  const q = el("q").value.trim().toLowerCase();
+  const minPay = +el("salary").value;
+  el("salaryval").textContent = minPay ? "€" + minPay / 1000 + "k" : "€0";
+
+  const rows = JOBS.filter(j => {
+    if (el("country").value && j.country !== el("country").value) return false;
+    if (el("city").value && j.city !== el("city").value) return false;
+    if (el("size").value && j.company_size !== el("size").value) return false;
+    if (el("source").value && j.source !== el("source").value) return false;
+    if (el("remote").checked && !j.is_remote) return false;
+    if (el("newonly").checked && !j.is_new) return false;
+    if (el("hideweak").checked && j.weak_balance) return false;
+    if (el("paidonly").checked && j.salary_source !== "from posting") return false;
+    if (minPay && (j.salary_max || 0) < minPay) return false;
+    if (q && !`${j.title} ${j.company} ${j.description}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const sort = el("sort").value;
+  rows.sort((a, b) =>
+    sort === "date" ? (b.first_seen || "").localeCompare(a.first_seen || "")
+  : sort === "pay"  ? (b.salary_max || 0) - (a.salary_max || 0)
+  :                   (b.score || 0) - (a.score || 0));
+
+  el("count").textContent = `${rows.length} of ${JOBS.length} roles shown`;
+  el("list").innerHTML = rows.length ? rows.map(card).join("")
+    : '<p class="empty">No roles match these filters. Try clearing one.</p>';
+}
+
+function card(j) {
+  const facts = [];
+  if (j.is_new) facts.push('<span class="f new">added today</span>');
+  facts.push(`<span class="f">${j.city !== "—" ? escHtml(j.city) + ", " : ""}${escHtml(j.country)}</span>`);
+  if (j.is_remote) facts.push('<span class="f">remote</span>');
+  facts.push(`<span class="f ${j.salary_source === "from posting" ? "pay" : ""}">` +
+             `${eur(j.salary_min)}–${eur(j.salary_max)} · ${escHtml(j.salary_source)}</span>`);
+  if (j.company_size !== "Unknown") facts.push(`<span class="f">${escHtml(j.company_size)}</span>`);
+  if (j.weak_balance) facts.push('<span class="f weak">weak pay/cost balance</span>');
+  facts.push(`<span class="f">${escHtml(j.source)}</span>`);
+  if (j.first_seen) facts.push(`<span class="f">seen ${escHtml(j.first_seen)}</span>`);
+
+  return `<article class="job">
+    <div class="score">${j.score}<small>match</small></div>
+    <div>
+      <h2 class="title"><a href="${escHtml(j.url)}" target="_blank" rel="noopener">${escHtml(j.title)}</a></h2>
+      <p class="co">${escHtml(j.company)}</p>
+      <div class="facts">${facts.join("")}</div>
+      ${j.reasons?.length ? `<p class="why">${escHtml(j.reasons.join(" · "))}</p>` : ""}
+    </div>
+  </article>`;
+}
+
+/* ---- wiring ----------------------------------------------------------- */
+controls.forEach(id => el(id).addEventListener("input", render));
+el("country").addEventListener("change", () => { syncCities(); render(); });
+el("rerun").addEventListener("click", hunt);
+el("reset").addEventListener("click", () => {
+  ["q","country","city","size","source"].forEach(id => el(id).value = "");
+  el("salary").value = 0; el("sort").value = "score";
+  ["remote","newonly","paidonly"].forEach(id => el(id).checked = false);
+  el("hideweak").checked = true;
+  syncCities(); render();
+});
+
+hunt();
+</script>
+</body>
+</html>
