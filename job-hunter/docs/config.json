@@ -1,0 +1,260 @@
+{
+ "profile": {
+  "headline": "AML / Financial Crime professional moving toward high-growth, evolving roles",
+  "seniority": [
+   "associate",
+   "manager",
+   "lead",
+   "senior",
+   "specialist",
+   "expert",
+   "head"
+  ],
+  "languages": [
+   "Italian",
+   "English",
+   "German (basic)"
+  ]
+ },
+ "keywords": {
+  "core": [
+   "aml",
+   "anti-money laundering",
+   "financial crime",
+   "kyc",
+   "kyb",
+   "cdd",
+   "edd",
+   "compliance",
+   "sanctions",
+   "fraud",
+   "risk",
+   "regulatory",
+   "mlro",
+   "transaction monitoring",
+   "onboarding"
+  ],
+  "adjacent": [
+   "chief of staff",
+   "founding",
+   "biz ops",
+   "business operations",
+   "strategy and operations",
+   "operations manager",
+   "product operations",
+   "product manager",
+   "solutions consultant",
+   "implementation",
+   "customer success manager",
+   "go-to-market",
+   "gtm",
+   "partnerships",
+   "launcher",
+   "generalist",
+   "special projects"
+  ],
+  "company_signals": [
+   "seed",
+   "series a",
+   "series b",
+   "early stage",
+   "early-stage",
+   "startup",
+   "scale-up",
+   "scaleup",
+   "b2b saas",
+   "saas",
+   "fintech",
+   "regtech",
+   "crypto",
+   "web3",
+   "payments",
+   "founding team",
+   "equity",
+   "stock options",
+   "esop"
+  ],
+  "exclude": [
+   "internship",
+   "intern (",
+   "working student",
+   "werkstudent",
+   "praktikum",
+   "apprentice",
+   "unpaid",
+   "volunteer",
+   "night shift"
+  ]
+ },
+ "locations": {
+  "priority": [
+   "Munich",
+   "München",
+   "Remote"
+  ],
+  "good_eu": [
+   "Berlin",
+   "Hamburg",
+   "Frankfurt",
+   "Amsterdam",
+   "Dublin",
+   "Zurich",
+   "Zürich",
+   "Copenhagen",
+   "Stockholm",
+   "Luxembourg",
+   "Vienna",
+   "Paris",
+   "Dubai"
+  ],
+  "neutral_eu": [
+   "Barcelona",
+   "Madrid",
+   "Milan",
+   "Milano",
+   "Lisbon",
+   "Warsaw",
+   "Krakow",
+   "Tallinn",
+   "Vilnius",
+   "Prague",
+   "Malta",
+   "Valletta"
+  ],
+  "remote_ok": true
+ },
+ "salary_benchmarks": {
+  "Munich": {
+   "gross_eur": 80000,
+   "col_index": 100
+  },
+  "Berlin": {
+   "gross_eur": 72000,
+   "col_index": 88
+  },
+  "Frankfurt": {
+   "gross_eur": 78000,
+   "col_index": 93
+  },
+  "Hamburg": {
+   "gross_eur": 72000,
+   "col_index": 90
+  },
+  "Zurich": {
+   "gross_eur": 120000,
+   "col_index": 135
+  },
+  "Amsterdam": {
+   "gross_eur": 75000,
+   "col_index": 97
+  },
+  "Dublin": {
+   "gross_eur": 70000,
+   "col_index": 95
+  },
+  "Copenhagen": {
+   "gross_eur": 78000,
+   "col_index": 100
+  },
+  "Stockholm": {
+   "gross_eur": 62000,
+   "col_index": 92
+  },
+  "Luxembourg": {
+   "gross_eur": 85000,
+   "col_index": 98
+  },
+  "Vienna": {
+   "gross_eur": 65000,
+   "col_index": 85
+  },
+  "Paris": {
+   "gross_eur": 65000,
+   "col_index": 96
+  },
+  "London": {
+   "gross_eur": 85000,
+   "col_index": 110
+  },
+  "Barcelona": {
+   "gross_eur": 45000,
+   "col_index": 75
+  },
+  "Madrid": {
+   "gross_eur": 45000,
+   "col_index": 73
+  },
+  "Milan": {
+   "gross_eur": 45000,
+   "col_index": 80
+  },
+  "Lisbon": {
+   "gross_eur": 38000,
+   "col_index": 72
+  },
+  "Warsaw": {
+   "gross_eur": 40000,
+   "col_index": 60
+  },
+  "Krakow": {
+   "gross_eur": 38000,
+   "col_index": 57
+  },
+  "Prague": {
+   "gross_eur": 40000,
+   "col_index": 63
+  },
+  "Tallinn": {
+   "gross_eur": 42000,
+   "col_index": 62
+  },
+  "Vilnius": {
+   "gross_eur": 40000,
+   "col_index": 58
+  },
+  "Valletta": {
+   "gross_eur": 42000,
+   "col_index": 70
+  },
+  "Bucharest": {
+   "gross_eur": 32000,
+   "col_index": 52
+  },
+  "Sofia": {
+   "gross_eur": 30000,
+   "col_index": 50
+  },
+  "Remote": {
+   "gross_eur": 70000,
+   "col_index": 85
+  }
+ },
+ "min_purchasing_power": 550,
+ "min_gross_eur": 48000,
+ "sources": {
+  "remotive": true,
+  "remoteok": true,
+  "arbeitnow": true,
+  "jobicy": true,
+  "adzuna": false,
+  "adzuna_countries": [
+   "de",
+   "nl",
+   "at",
+   "it"
+  ],
+  "greenhouse_boards": [
+   "monzo",
+   "wise",
+   "ramp"
+  ],
+  "lever_boards": [
+   "sumup"
+  ]
+ },
+ "output": {
+  "max_jobs": 400,
+  "keep_days": 30,
+  "min_score": 25
+ }
+}
